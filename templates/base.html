@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block title %}
+    <title> Story thing </title>
+    {% endblock %}
+  </head>
+  <body>
+    <center>
+      {% block body %}
+      <h2> Welcome home, Dorothy! </h2>
+      <p> Pick a button </p>
+      <form method = "GET" action = "create">
+	<button type = "submit"> Create New Story </button>
+      </form>
+      <form method = "GET" action = "view">
+	<button type = "submit"> View Your Stories </button>
+      </form>
+      <form method = "GET" action = "edit">
+	<button type = "submit"> Edit a stoSry </button>
+      </form>
+      {% endblock %}
+    </center>
+  </body>
+</html>
+      
