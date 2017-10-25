@@ -11,6 +11,9 @@ def login():
 def homepage():
     return render_template("base.html")
 
+@story_app.route("/create")
+def create_story():
+    return render_template("create.html")
 
 if __name__ == "__main__":
     story_app.run(debug=True)
