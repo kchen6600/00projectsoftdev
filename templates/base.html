@@ -6,8 +6,9 @@
     {% endblock %}
   </head>
   <body>
+
+    {% block body %}
     <center>
-      {% block body %}
       <h2> Welcome home, Dorothy! </h2>
       <p> Pick a button </p>
       <form method = "GET" action = "create">
@@ -19,8 +20,9 @@
       <form method = "GET" action = "edit">
 	<button type = "submit"> Edit a stoSry </button>
       </form>
-      {% endblock %}
     </center>
+    {% endblock %}
+    
   </body>
 </html>
       
