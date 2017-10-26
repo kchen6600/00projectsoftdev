@@ -1,3 +1,7 @@
 #devlog
 chenK freudenbergJ -- 2017-10-24 14:06
+<<<<<<< HEAD
 created stories, data, and templates folder, created @home route
+=======
+
+>>>>>>> sonal

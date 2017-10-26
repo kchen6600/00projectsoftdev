@@ -5,7 +5,7 @@ story_app = Flask(__name__)
 
 @story_app.route("/")
 def login():
-    return "awdawd"
+    return render_template("login.html")
 
 @story_app.route("/home")
 def homepage():
