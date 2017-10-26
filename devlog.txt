@@ -1,7 +1,14 @@
 #devlog
+------------------------------------------------------------------
 chenK freudenbergJ -- 2017-10-24 14:06
+<<<<<<< HEAD
 <<<<<<< HEAD
 created stories, data, and templates folder, created @home route
 =======
 
 >>>>>>> sonal
+=======
+*created stories, data, and templates folder, created @home route
+------------------------------------------------------------------
+FominaS - 2017-10-26 18:01
+*created a SQL operations 'library' in utils
