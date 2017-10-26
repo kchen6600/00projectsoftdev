@@ -71,9 +71,12 @@ def display(tableName, fields, cursor):
 
     return table
 
-def closeFile(db):
+def commit(db):
     db.commit()
+
+def closeFile(db):
     db.close()
+
 
 #TEST---------------------
 dbTest = openDb('../data/stories.db')
@@ -88,6 +91,7 @@ update('students', 'stupid', 0, 'name = "betty"',cursorTest)
 print display('students' , ['grade', 'name' , 'stupid'], cursorTest)
 
 
+commit(dbTest)
 closeFile(dbTest)
 
 
