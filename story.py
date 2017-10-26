@@ -7,8 +7,11 @@ story_app = Flask(__name__)
 #Creating the database 
 openDB("data/stories.db")
 cursor = createCursor(db)
-createTable(mainStories,['title','storyID', 'timeLast', 'lastAdd','storyFile','lastEditor'] ,['TEXT', 'INTEGER PRIMARY KEY AUTO_INCREMENT','
+createTable(mainStories,['title','storyID', 'timeLast', 'lastAdd','storyFile','lastEditor'] ,['TEXT', 'INTEGER PRIMARY KEY AUTOINCREMENT','datetime2', 'TEXT', 'TEXT', 'TEXT'])
 
+createTable (userStories, ['username', 'storyIDs' , 'myAddition'], ['TEXT' , 'TEXT' , 'TEXT'])
+
+            
 @story_app.route("/")
 def login():
     return render_template("login.html")
