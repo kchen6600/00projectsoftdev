@@ -13,7 +13,7 @@ createTable(mainStories,['title','storyID', 'timeLast', 'lastAdd','storyFile','l
 def login():
     return render_template("login.html")
 
-@story_app.route("/home")
+@story_app.route("/home",methods = ['POST','GET'])
 def homepage():
     return render_template("base.html")
 
