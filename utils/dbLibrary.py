@@ -79,6 +79,7 @@ def closeFile(db):
 
 
 #TEST---------------------
+
 dbTest = openDb('../data/stories.db')
 cursorTest = createCursor(dbTest)
 #for the next line i tried making a column name "stupid?" but it gave me a syntax error???
@@ -93,5 +94,4 @@ print display('students' , ['grade', 'name' , 'stupid'], cursorTest)
 
 commit(dbTest)
 closeFile(dbTest)
-
 
