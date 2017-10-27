@@ -79,7 +79,7 @@ def closeFile(db):
 
 
 #TEST---------------------
-
+'''
 dbTest = openDb('../data/stories.db')
 cursorTest = createCursor(dbTest)
 #for the next line i tried making a column name "stupid?" but it gave me a syntax error???
@@ -90,8 +90,24 @@ insertRow('students' , ['grade', 'name' , 'stupid'] , [93 , "'betty'", 1] , curs
 update('students', 'stupid', 0, 'name = "betty"',cursorTest)
 
 print display('students' , ['grade', 'name' , 'stupid'], cursorTest)
+'''
+
+#commit(dbTest)
+#closeFile(dbTest)
 
 
-commit(dbTest)
-closeFile(dbTest)
+if __name__ == "__main__":
+    #Creating the database 
+    dbStory = dbLibrary.openDb("data/stories.db")
+    cursor = dbLibrary.createCursor(dbStory)
 
+
+    dbLibrary.createTable('mainStories',['title','storyID', 'timeLast', 'lastAdd','storyFile','lastEditor'] ,['TEXT', 'INTEGER PRIMARY KEY AUTOINCREMENT','datetime2', 'TEXT', 'TEXT', 'TEXT'], cursor)
+
+    dbLibrary.createTable('userStories', ['username', 'storyIDs' , 'myAddition'], ['TEXT' , 'TEXT' , 'TEXT'],cursor)
+
+
+    dbLibrary.createTable('accounts', ['username', 'password'], ['TEXT', 'TEXT'], cursor)
+
+    dbLibrary.commit(dbStory)
+    dbLibrary.closeFile(dbStory)
