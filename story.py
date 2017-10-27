@@ -18,20 +18,9 @@ createTable(mainStories,['title','storyID', 'timeLast', 'lastAdd','storyFile','l
 
 createTable (userStories, ['username', 'storyIDs' , 'myAddition'], ['TEXT' , 'TEXT' , 'TEXT'])'''
 
-<<<<<<< HEAD
+
 createTable(accounts, ['username', 'password'], ['TEXT', 'TEXT'])
 
-
-@story_app.route("/", methods = ['POST', 'GET'])
-def login():
-    return render_template("login.html")
-
-@story_app.route("/createAccount", methods = ['POST', 'GET'])
-def createAccount():
-    
-
-=======
-            
 @story_app.route("/")
 def root():
     return redirect(url_for('login'))
@@ -43,12 +32,11 @@ def login():
 @story_app.route("/account")
 def account():
     return render_template("account.html")
->>>>>>> 8de43f85f0af4b520f201ab4a77f24d2d887ec73
 
 @story_app.route("/home",methods = ['POST','GET'])
 def homepage():
     return render_template("base.html")
-
+            
 @story_app.route("/create")
 def create_story():
     return render_template("create.html")
