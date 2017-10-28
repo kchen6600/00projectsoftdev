@@ -1,7 +1,9 @@
 from flask import Flask, render_template, redirect, url_for,request, session, flash
 import sqlite3
 from utils import dbLibrary
-import hashlib, uuid
+import hashlib, uuid, os
+from datetime import datetime
+
 
 
 
@@ -15,11 +17,11 @@ def check_password(hashed_password, user_password):
 
 
 story_app = Flask(__name__)
-story_app.secret_key = 'secret'
+story_app.secret_key = os.urandom(32)
 
 
 #------------------------LOGIN----------------------------------
-@story_app.route("/")  
+@story_app.route("/")
 def root():
     return redirect(url_for('login'))
 
@@ -42,28 +44,29 @@ def authenticate():
         return redirect(url_for('login'))
 
     hashed_passCursor = cursor.execute("SELECT password FROM accounts WHERE username = '" + input_username + "'")
-    numPasses = 0 #should end up being 1 if all fields were filled 
+    numPasses = 0 #should end up being 1 if all fields were filled
 
     for item in hashed_passCursor:
         numPasses += 1
         hashed_pass = item[0]
         print item[0]
-        
+
     dbLibrary.closeFile(dbStories)
-    
+
     if  numPasses == 0:
         flash ("User doesn't exist")
         return redirect(url_for('login'))
-    
+
     elif check_password(hashed_pass, input_password):
         flash("Login Successful")
+        session["username"] = input_username;#in order to keep track of user
         return redirect(url_for('home'))
 
     else:
         flash("Invalid Login Information")
         return redirect(url_for('login'))
-#-------------------------------------------------------------------        
-    
+#-------------------------------------------------------------------
+
 
 
 #---------------CREATING AN ACCOUNT----------------------------------
@@ -100,7 +103,7 @@ def accountSubmit():
     counter = 0 #should remain 0 if valid username since username needs to be unique
     for item in sameUser:
         counter += 1
-        
+
     if counter == 0:
         dbLibrary.insertRow('accounts',['username', 'password'],[username, password],cursor)
         flash("Account Successfully Created")
@@ -114,19 +117,45 @@ def accountSubmit():
         dbLibrary.closeFile(dbStories)
         return redirect(url_for('account'))
 
-#---------------------------------------------------------------------    
-    
+#-----------------------------------------------------------
+
 @story_app.route("/home",methods = ['POST','GET'])
 def home():
     return render_template("base.html") #I don't think its a good idea to put it in base, base shud never be rendered
 
+#---------------CREATING STORY----------------------------
+
 @story_app.route("/create")
 def create_story():
     return render_template("create.html")
+
+@story_app.route("/new_submit", methods = ['POST'])
+def new_submit():
+
+    dbStories = dbLibrary.openDb("data/stories.db")
+    cursor = dbLibrary.createCursor(dbStories)
+
+    print request.form
+    title = request.form['title']
+    print title
+    body = request.form['body']
+
+    print 'stories/' + title + '.txt'
+    print os.getcwd()
+    #Creating story file:
+    story_obj = open('stories/' + title + '.txt', "w+")
+    story_obj.write(body)
+
+    datetime2 = str(datetime.now())
+    print datetime2
+    print session
+    last_editor = session["username"]
+    dbLibrary.insertRow('mainStories', ['title', 'timeLast', 'lastAdd', 'storyFile', 'lastEditor'], [title, datetime2, body, title + ".txt", last_editor], cursor)
+
+    return redirect(url_for('home'))
 
 
 
 
 if __name__ == "__main__":
     story_app.run(debug=True)
-

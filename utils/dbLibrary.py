@@ -1,6 +1,6 @@
 import sqlite3
 
-#also creates a file 
+#also creates a file
 def openDb(path):
     db = sqlite3.connect(path)
     return db
@@ -8,7 +8,7 @@ def openDb(path):
 def createCursor(db):
     c = db.cursor()
     return c
-                  
+
 #types : text, integer, real, numeric, blob
 #tableName is a string, fields is an array, types is an arr of the same length
 def createTable(tableName, fields, types, cursor):
@@ -26,12 +26,12 @@ def createTable(tableName, fields, types, cursor):
 #values is an array with values to insert for that row
 def insertRow (tableName, fields, values, cursor):
     parameter = ' ('
-    
+
     for field in fields:
         parameter += field + ", "
     parameter = parameter[0:-2] + ") VALUES ("
     #print parameter
-    
+
     for value in values:
         val = str(value)
         if isinstance(value, basestring):
@@ -41,12 +41,12 @@ def insertRow (tableName, fields, values, cursor):
 
     insert = "INSERT INTO " + tableName + parameter
     print "\n\n" + insert + "\n\n"
-    
+
     cursor.execute(insert)
 
 
 
-#condition is string type and follows WHERE statement for UPDATE 
+#condition is string type and follows WHERE statement for UPDATE
 def update (tableName, field, newVal, condition, cursor):
     update = "UPDATE " + tableName + " SET " + field + " = " + str(newVal)
     if len(condition) != 0:
@@ -54,18 +54,18 @@ def update (tableName, field, newVal, condition, cursor):
 
     print "\n\n" + update + "\n\n"
     cursor.execute(update)
-    
+
 
 def display(tableName, fields, cursor):
     view = cursor.execute('SELECT * FROM ' + tableName + ';')
-    
+
     table = ''
     for field in fields:
         table += field + ", "
 
     table = table[0:-2]
     table += "\n"
-    
+
     for item in view:
         for content in item:
             table +=  str(content) + ", "
@@ -100,7 +100,7 @@ closeFile(dbTest)
 #Creating the actual db
 
 if __name__ == "__main__":
-    #Creating the database 
+    #Creating the database
     dbStory = openDb("data/stories.db")
     cursor = createCursor(dbStory)
 
