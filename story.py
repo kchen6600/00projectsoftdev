@@ -308,6 +308,7 @@ def edit_submit():
     title = request.form['title']
     id = request.form['id']
     newAdd = request.form['addition']
+    last_editor = session["username"]
 
     #Updating story file:
     story_obj = open('stories/' + title + '.txt', "a+")
@@ -316,6 +317,11 @@ def edit_submit():
 
     command = "UPDATE mainStories SET lastAdd = '" + newAdd + "' WHERE storyID =" + id + ";" #update lastAdd
     cursor.execute(command)
+    command = "UPDATE mainStories SET lastEditor = '" + last_editor + "' WHERE storyID =" + id + ";" #update lastAdd
+    cursor.execute(command)
+    dbLibrary.insertRow('userStories', ['username', 'storyIDs','myAddition'], [last_editor, id, newAdd], cursor)
+
+    #Update the other database with all the user additions
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)  
