@@ -173,9 +173,13 @@ def view_stories():
     stories_raw = dbLibrary.display('mainStories', ['title', 'storyID', 'timeLast', 'storyFile', 'lastEditor'], cursor)
     #print stories_raw
 
-    entries_list = stories_raw.split("\n")#list of entries
+    print stories_raw
+
+    entries_list = stories_raw.split("|\n")#list of entries
     header = entries_list.pop(0)
 
+    print "RAW"
+    print entries_list
 
     split_entries_list = [line.split(",") for line in entries_list] #list of lists of entries
     split_entries_list.pop(-1)#delete empty field created by split
