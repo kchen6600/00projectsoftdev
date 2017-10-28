@@ -194,21 +194,39 @@ def view_stories():
 
     your_split_entries = []
 
-    for entry in split_entries_list:
-        print "ENTRY"
-        print entry
-        #print entry[5]
-        #print session["username"]
-        if entry[5] == session["username"]:
-            print entry
-            your_split_entries.append(entry)#append only your additions
+    #users_raw = dbLibrary.display('userStories', ['title', 'storyIDs', 'myAddition'], cursor)
+    command = "SELECT username, storyIDs, myAddition FROM userStories"
+    cursor.execute(command)
+
+    print "FETCHALL"
+    userdata = cursor.fetchall()
+    print userdata
+
+    # for entry in split_entries_list:
+    #     print "ENTRY"
+    #     print entry
+    #     #print entry[5]
+    #     #print session["username"]
+    #     if entry[5] == session["username"]:
+    #         print entry
+    #         your_split_entries.append(entry)#append only your additions
+
+    for story in userdata:#maybe we can do this in not O(n^2)
+        if story[0] == session["username"]:
+            print story[0]
+            print story[1]
+            for entry in split_entries_list:
+                if entry[1] == story[1]:
+                    print entry
+                    your_split_entries.append(entry)#append only your additions
+
 
     print your_split_entries
 
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
-    
+
     return render_template("view.html", story_list = your_split_entries)
 
 
@@ -255,14 +273,39 @@ def edit_stories():
 
     available_split_entries = []
 
-    for entry in split_entries_list:
-        print "ENTRY"
-        print entry
-        #print entry[5]
-        #print session["username"]
-        if entry[5] != session["username"]:
-            print entry
-            available_split_entries.append(entry)#append stories you haven't editted 
+    command = "SELECT username, storyIDs, myAddition FROM userStories"
+    cursor.execute(command)
+
+    print "FETCHALL"
+    userdata = cursor.fetchall()
+    print userdata
+
+    # for entry in split_entries_list:
+    #     print "ENTRY"
+    #     print entry
+    #     #print entry[5]
+    #     #print session["username"]
+    #     if entry[5] != session["username"]:
+    #         print entry
+    #         available_split_entries.append(entry)#append stories you haven't editted
+
+    ids_edited = []
+    for story in userdata:
+        if story[0] == session["username"]:
+            print story[0]
+            print story[1]
+            ids_edited.append(story[1])
+            print "IDS EDITED"
+            print ids_edited
+
+    for story in userdata:#maybe we can do this in not O(n^2)
+        if story[0] != session["username"]:
+            #print story[0]
+            #print story[1]
+            for entry in split_entries_list:
+                if entry[1] not in ids_edited and entry not in available_split_entries:
+                    #print entry
+                    available_split_entries.append(entry)#append only your additions
 
     print available_split_entries
 
@@ -282,7 +325,7 @@ def edit_single(id):
     for row in cursor.execute(command):
         title = row[0]
         lastaddition = row[3]
-    
+
     #filename = cursor.fetchall()[0][0]#extract from tuple from list
     #print "FILENAME"
     #print filename
@@ -324,10 +367,10 @@ def edit_submit():
     #Update the other database with all the user additions
 
     dbLibrary.commit(dbStories)
-    dbLibrary.closeFile(dbStories)  
+    dbLibrary.closeFile(dbStories)
 
     return redirect(url_for('home'))
-    
+
 
 if __name__ == "__main__":
     story_app.run(debug=True)

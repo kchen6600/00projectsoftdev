@@ -17,3 +17,9 @@ added create stories, temporary less functional sessions
 ------------------------------------------------------------------
 freudenbergJ - 2017-10-28 11:59
 added view stories, view.html and jinja magic
+------------------------------------------------------------------
+parabS - 2017-10-28 17:09
+added edit stories
+------------------------------------------------------------------
+freudenbergJ - 2017-10-28 18:05
+made view/edit keep track of all users who edited not just last edit
