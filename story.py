@@ -140,17 +140,24 @@ def new_submit():
     print title
     body = request.form['body']
 
-    print 'stories/' + title + '.txt'
-    print os.getcwd()
+    #print 'stories/' + title + '.txt'
+    #print os.getcwd()
     #Creating story file:
     story_obj = open('stories/' + title + '.txt', "w+")
     story_obj.write(body)
 
-    datetime2 = str(datetime.now())
+    datetime2 = str(datetime.now())[0:-7]#date and time (w/o milliseconds)
     print datetime2
     print session
     last_editor = session["username"]
     dbLibrary.insertRow('mainStories', ['title', 'timeLast', 'lastAdd', 'storyFile', 'lastEditor'], [title, datetime2, body, title + ".txt", last_editor], cursor)
+
+    print dbLibrary.display('mainStories', 'storyIDs', cursor)
+
+    dbLibrary.insertRow('userStories', ['username', 'myAddition'], [last_editor, body], cursor)
+
+    dbLibrary.commit(dbStories)
+    dbLibrary.closeFile(dbStories)
 
     return redirect(url_for('home'))
 

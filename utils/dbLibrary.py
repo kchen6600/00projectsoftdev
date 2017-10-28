@@ -105,7 +105,7 @@ if __name__ == "__main__":
     cursor = createCursor(dbStory)
 
 
-    createTable('mainStories',['title','storyID', 'timeLast', 'lastAdd','storyFile','lastEditor'] ,['TEXT', 'INTEGER PRIMARY KEY AUTOINCREMENT','datetime2', 'TEXT', 'TEXT', 'TEXT'], cursor)
+    createTable('mainStories',['title','storyID', 'timeLast', 'lastAdd','storyFile','lastEditor'] ,['TEXT', 'INTEGER PRIMARY KEY AUTOINCREMENT','TEXT', 'TEXT', 'TEXT', 'TEXT'], cursor)
 
     createTable('userStories', ['username', 'storyIDs' , 'myAddition'], ['TEXT' , 'TEXT' , 'TEXT'],cursor)
 
