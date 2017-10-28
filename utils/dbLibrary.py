@@ -33,7 +33,10 @@ def insertRow (tableName, fields, values, cursor):
     #print parameter
     
     for value in values:
-        parameter += str(value) + ", "
+        val = str(value)
+        if isinstance(value, basestring):
+            val = "'" + val + "'"
+        parameter += val + ", "
     parameter = parameter[0:-2] + ");"
 
     insert = "INSERT INTO " + tableName + parameter
@@ -90,24 +93,24 @@ insertRow('students' , ['grade', 'name' , 'stupid'] , [93 , "'betty'", 1] , curs
 update('students', 'stupid', 0, 'name = "betty"',cursorTest)
 
 print display('students' , ['grade', 'name' , 'stupid'], cursorTest)
+commit(dbTest)
+closeFile(dbTest)
 '''
 
-#commit(dbTest)
-#closeFile(dbTest)
-
+#Creating the actual db
 
 if __name__ == "__main__":
     #Creating the database 
-    dbStory = dbLibrary.openDb("data/stories.db")
-    cursor = dbLibrary.createCursor(dbStory)
+    dbStory = openDb("data/stories.db")
+    cursor = createCursor(dbStory)
 
 
-    dbLibrary.createTable('mainStories',['title','storyID', 'timeLast', 'lastAdd','storyFile','lastEditor'] ,['TEXT', 'INTEGER PRIMARY KEY AUTOINCREMENT','datetime2', 'TEXT', 'TEXT', 'TEXT'], cursor)
+    createTable('mainStories',['title','storyID', 'timeLast', 'lastAdd','storyFile','lastEditor'] ,['TEXT', 'INTEGER PRIMARY KEY AUTOINCREMENT','datetime2', 'TEXT', 'TEXT', 'TEXT'], cursor)
 
-    dbLibrary.createTable('userStories', ['username', 'storyIDs' , 'myAddition'], ['TEXT' , 'TEXT' , 'TEXT'],cursor)
+    createTable('userStories', ['username', 'storyIDs' , 'myAddition'], ['TEXT' , 'TEXT' , 'TEXT'],cursor)
 
 
-    dbLibrary.createTable('accounts', ['username', 'password'], ['TEXT', 'TEXT'], cursor)
+    createTable('accounts', ['username', 'password'], ['TEXT', 'TEXT'], cursor)
 
-    dbLibrary.commit(dbStory)
-    dbLibrary.closeFile(dbStory)
+    commit(dbStory)
+    closeFile(dbStory)

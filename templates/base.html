@@ -6,10 +6,14 @@
     {% endblock %}
   </head>
   <body>
-
+	{% set messages = get_flashed_messages() %}
+	{% for message in messages %}
+		<i><h5>{{message}}</h5></i>
+	{% endfor %}
+	
     {% block body %}
     <center>
-      <h2> Welcome home, Dorothy! </h2>
+      <h2> Welcome home! </h2>
       <p> Pick a button </p>
       <form method = "GET" action = "create">
 	<button type = "submit"> Create New Story </button>
