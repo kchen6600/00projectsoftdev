@@ -152,7 +152,7 @@ def new_submit():
     last_editor = session["username"]
     dbLibrary.insertRow('mainStories', ['title', 'timeLast', 'lastAdd', 'storyFile', 'lastEditor'], [title, datetime2, body, title + ".txt", last_editor], cursor)
 
-    print dbLibrary.display('mainStories', 'storyIDs', cursor)
+    #print dbLibrary.display('mainStories', 'storyIDs', cursor)
 
     dbLibrary.insertRow('userStories', ['username', 'myAddition'], [last_editor, body], cursor)
 
@@ -161,7 +161,57 @@ def new_submit():
 
     return redirect(url_for('home'))
 
+#---------------------------------------------------------
 
+#---------------CREATING STORY----------------------------
+
+@story_app.route("/view")
+def view_stories():
+    dbStories = dbLibrary.openDb("data/stories.db")
+    cursor = dbLibrary.createCursor(dbStories)
+
+    stories_raw = dbLibrary.display('mainStories', ['title', 'storyID', 'timeLast', 'storyFile', 'lastEditor'], cursor)
+    #print stories_raw
+
+    entries_list = stories_raw.split("\n")#list of entries
+    header = entries_list.pop(0)
+
+
+    split_entries_list = [line.split(",") for line in entries_list] #list of lists of entries
+    split_entries_list.pop(-1)#delete empty field created by split
+
+    your_split_entries = []
+
+    for entry in split_entries_list:
+        print "ENTRY"
+        print entry
+        #print entry[5]
+        #print session["username"]
+        if entry[5] == ' ' + session["username"]:#entry has space in front idk why
+            your_split_entries.append(entry)#append only your additions
+
+    print your_split_entries
+
+
+    return render_template("view.html", story_list = your_split_entries)
+
+
+@story_app.route("/view/<id>")
+def view_single(id):
+    dbStories = dbLibrary.openDb("data/stories.db")
+    cursor = dbLibrary.createCursor(dbStories)
+
+    command = "SELECT storyFile FROM mainStories WHERE storyID =" + str(id) + ";"
+    cursor.execute(command)
+
+    filename = cursor.fetchall()
+    print "FILENAME"
+    return filename[0]
+
+#-------------------------------------------------------
+@story_app.route("/edit")
+def edit_stories():
+    return "hi"
 
 
 if __name__ == "__main__":

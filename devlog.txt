@@ -13,4 +13,7 @@ parabS - 2017-10-27 01:27
 account creation template and route
 ------------------------------------------------------------------
 freudenbergJ - 2017-10-28 09:46
-added create stories, sessions
+added create stories, temporary less functional sessions
+------------------------------------------------------------------
+freudenbergJ - 2017-10-28 11:59
+added view stories, view.html and jinja magic
