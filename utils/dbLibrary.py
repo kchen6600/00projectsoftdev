@@ -61,16 +61,16 @@ def display(tableName, fields, cursor):
 
     table = ''
     for field in fields:
-        table += field + ", "
+        table += field + "| "
 
     table = table[0:-2]
-    table += "|\n"
+    table += "$|$\n"
 
     for item in view:
         for content in item:
-            table +=  str(content) + ", "
+            table +=  str(content) + "| "
         table = table[0:-2]
-        table += "|\n"#unique delimiter that won't show up in text
+        table += "$|$\n"#unique delimiter that won't show up in text
 
     return table
 

@@ -175,13 +175,13 @@ def view_stories():
 
     print stories_raw
 
-    entries_list = stories_raw.split("|\n")#list of entries
+    entries_list = stories_raw.split("$|$\n")#list of entries
     header = entries_list.pop(0)
 
     print "RAW"
     print entries_list
 
-    split_entries_list = [line.split(",") for line in entries_list] #list of lists of entries
+    split_entries_list = [line.split("| ") for line in entries_list] #list of lists of entries
     split_entries_list.pop(-1)#delete empty field created by split
 
     your_split_entries = []
@@ -191,7 +191,8 @@ def view_stories():
         print entry
         #print entry[5]
         #print session["username"]
-        if entry[5] == ' ' + session["username"]:#entry has space in front idk why
+        if entry[5] == session["username"]:
+            print entry
             your_split_entries.append(entry)#append only your additions
 
     print your_split_entries
@@ -213,6 +214,7 @@ def view_single(id):
     print filename
     readobj = open("stories/" + filename, "r")
     body = readobj.read()
+    print body
 
     return render_template("view_single.html", title = filename[:-4], body = body)
 
