@@ -18,14 +18,55 @@ story_app = Flask(__name__)
 story_app.secret_key = 'secret'
 
 
-@story_app.route("/")
+#------------------------LOGIN----------------------------------
+@story_app.route("/")  
 def root():
     return redirect(url_for('login'))
 
-@story_app.route("/login",methods = ['POST','GET'])
+@story_app.route("/login", methods = ['POST' , 'GET'])
 def login():
     return render_template("login.html")
 
+@story_app.route("/authenticate",methods = ['POST','GET'])
+def authenticate():
+    dbStories = dbLibrary.openDb("data/stories.db")
+    cursor = dbLibrary.createCursor(dbStories)
+    input_username = request.form['username']
+    input_password = request.form['password']
+    #print input_username
+    #print input_password
+
+
+    if input_username=='' or input_password=='' :
+        flash("Please Fill In All Fields")
+        return redirect(url_for('login'))
+
+    hashed_passCursor = cursor.execute("SELECT password FROM accounts WHERE username = '" + input_username + "'")
+    numPasses = 0 #should end up being 1 if all fields were filled 
+
+    for item in hashed_passCursor:
+        numPasses += 1
+        hashed_pass = item[0]
+        print item[0]
+        
+    dbLibrary.closeFile(dbStories)
+    
+    if  numPasses == 0:
+        flash ("User doesn't exist")
+        return redirect(url_for('login'))
+    
+    elif check_password(hashed_pass, input_password):
+        flash("Login Successful")
+        return redirect(url_for('home'))
+
+    else:
+        flash("Invalid Login Information")
+        return redirect(url_for('login'))
+#-------------------------------------------------------------------        
+    
+
+
+#---------------CREATING AN ACCOUNT----------------------------------
 @story_app.route("/account", methods = ['POST' , 'GET'])
 def account():
     return render_template("account.html")
@@ -36,12 +77,30 @@ def accountSubmit():
     cursor = dbLibrary.createCursor(dbStories)
     #print request.form
     username = request.form['username']
-    password = hash_password(request.form['password'])
+    password = request.form['password']
+
+    if username == '' or password == '':
+        dbLibrary.closeFile(dbStories)
+        flash("Please Fill In All Fields")
+        return redirect(url_for('account'))
+
+    elif len(password)< 6:
+        dbLibrary.closeFile(dbStories)
+        flash("Password must have at least 6 characters")
+        return redirect(url_for('account'))
+
+    elif (' ' in username or ' ' in password):
+        dbLibrary.closeFile(dbStories)
+        flash("Username and Password cannot contain the space character")
+        return redirect(url_for('account'))
+
+    password = hash_password(password)
     sameUser = cursor.execute("SELECT username FROM accounts WHERE username = '" + username +"'")
 
     counter = 0 #should remain 0 if valid username since username needs to be unique
     for item in sameUser:
         counter += 1
+        
     if counter == 0:
         dbLibrary.insertRow('accounts',['username', 'password'],[username, password],cursor)
         flash("Account Successfully Created")
@@ -55,11 +114,11 @@ def accountSubmit():
         dbLibrary.closeFile(dbStories)
         return redirect(url_for('account'))
 
-    
+#---------------------------------------------------------------------    
     
 @story_app.route("/home",methods = ['POST','GET'])
-def homepage():
-    return render_template("base.html")
+def home():
+    return render_template("base.html") #I don't think its a good idea to put it in base, base shud never be rendered
 
 @story_app.route("/create")
 def create_story():

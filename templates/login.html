@@ -6,12 +6,12 @@
 
 {% block body %}
     <h1> LOGIN </h1>
-    <form method="POST" action="/home">
+    <form method="POST" action="/authenticate">
       <h2>Enter your username</h2>
-      <input type="text" name="name"><br><br>
+      <input type="text" name="username" value=''><br><br>
       <h2>Enter your password</h2>
-      <input type="password" name="pass"><br><br>
-      <input type="submit">
+      <input type="password" name="password" value=''><br><br>
+      <input type="submit" name="submit" value = "SUBMIT">
     </form>
     <h2> First time visitor? </h2>
     <a href="/account"><h3>Create an account</h3></a>
