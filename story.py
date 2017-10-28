@@ -196,17 +196,22 @@ def view_stories():
     return render_template("view.html", story_list = your_split_entries)
 
 
-@story_app.route("/view/<id>")
+@story_app.route("/view/<id>")#create route to view each story
 def view_single(id):
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
-    command = "SELECT storyFile FROM mainStories WHERE storyID =" + str(id) + ";"
+    command = "SELECT storyFile FROM mainStories WHERE storyID =" + str(id) + ";"#match story IDs
     cursor.execute(command)
 
-    filename = cursor.fetchall()
+    filename = cursor.fetchall()[0][0]#extract from tuple from list
     print "FILENAME"
-    return filename[0]
+    print filename
+    readobj = open("stories/" + filename, "r")
+    body = readobj.read()
+
+    return render_template("view_single.html", title = filename[:-4], body = body)
+
 
 #-------------------------------------------------------
 @story_app.route("/edit")
