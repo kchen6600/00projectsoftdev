@@ -145,6 +145,7 @@ def new_submit():
     #Creating story file:
     story_obj = open('stories/' + title + '.txt', "w+")
     story_obj.write(body)
+    story_obj.close()
 
     datetime2 = str(datetime.now())[0:-7]#date and time (w/o milliseconds)
     print datetime2
@@ -154,7 +155,14 @@ def new_submit():
 
     #print dbLibrary.display('mainStories', 'storyIDs', cursor)
 
-    dbLibrary.insertRow('userStories', ['username', 'myAddition'], [last_editor, body], cursor)
+    #Fix the table to add the story id too
+    #UPDATE <table> SET <field> = <value> WHERE <condition>;
+    command = "SELECT * FROM mainStories WHERE title = '" + title + "'AND timeLast = '" + datetime2 + "';"
+    #There should only be one row from this command
+    for fieldrow in cursor.execute(command):
+        storyID = fieldrow[1]
+
+    dbLibrary.insertRow('userStories', ['username', 'storyIDs','myAddition'], [last_editor, storyID, body], cursor)
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
@@ -198,6 +206,9 @@ def view_stories():
     print your_split_entries
 
 
+    dbLibrary.commit(dbStories)
+    dbLibrary.closeFile(dbStories)
+    
     return render_template("view.html", story_list = your_split_entries)
 
 
@@ -216,14 +227,101 @@ def view_single(id):
     body = readobj.read()
     print body
 
+    dbLibrary.commit(dbStories)
+    dbLibrary.closeFile(dbStories)
+
     return render_template("view_single.html", title = filename[:-4], body = body)
 
 
 #-------------------------------------------------------
 @story_app.route("/edit")
 def edit_stories():
-    return "hi"
+    dbStories = dbLibrary.openDb("data/stories.db")
+    cursor = dbLibrary.createCursor(dbStories)
 
+    stories_raw = dbLibrary.display('mainStories', ['title', 'storyID', 'timeLast', 'storyFile', 'lastEditor'], cursor)
+    #print stories_raw
+
+    print stories_raw
+
+    entries_list = stories_raw.split("$|$\n")#list of entries
+    header = entries_list.pop(0)
+
+    print "RAW"
+    print entries_list
+
+    split_entries_list = [line.split("| ") for line in entries_list] #list of lists of entries
+    split_entries_list.pop(-1)#delete empty field created by split
+
+    available_split_entries = []
+
+    for entry in split_entries_list:
+        print "ENTRY"
+        print entry
+        #print entry[5]
+        #print session["username"]
+        if entry[5] != session["username"]:
+            print entry
+            available_split_entries.append(entry)#append stories you haven't editted 
+
+    print available_split_entries
+
+    dbLibrary.commit(dbStories)
+    dbLibrary.closeFile(dbStories)
+
+    return render_template("edit_list.html", story_list = available_split_entries)
+
+@story_app.route("/edit/<id>")#create route to view each story
+def edit_single(id):
+    dbStories = dbLibrary.openDb("data/stories.db")
+    cursor = dbLibrary.createCursor(dbStories)
+
+    command = "SELECT * FROM mainStories WHERE storyID =" + str(id) + ";"#match story IDs
+
+    #There should only be one row
+    for row in cursor.execute(command):
+        title = row[0]
+        lastaddition = row[3]
+    
+    #filename = cursor.fetchall()[0][0]#extract from tuple from list
+    #print "FILENAME"
+    #print filename
+    #readobj = open("stories/" + filename, "r")
+    #body = readobj.read()
+    #print body
+    #lastaddition = "Something from table"
+
+    dbLibrary.commit(dbStories)
+    dbLibrary.closeFile(dbStories)
+
+    return render_template("edit_single.html", id = id, title = title, lastaddition = lastaddition)
+
+@story_app.route("/edit_submit", methods = ['POST'])
+def edit_submit():
+
+    #Stuff to update the last Add of main Stories
+    #UPDATE <table> SET <field> = <value> WHERE <condition>;
+    #
+    dbStories = dbLibrary.openDb("data/stories.db")
+    cursor = dbLibrary.createCursor(dbStories)
+
+    title = request.form['title']
+    id = request.form['id']
+    newAdd = request.form['addition']
+
+    #Updating story file:
+    story_obj = open('stories/' + title + '.txt', "a+")
+    story_obj.write(newAdd)
+    story_obj.close()
+
+    command = "UPDATE mainStories SET lastAdd = '" + newAdd + "' WHERE storyID =" + id + ";" #update lastAdd
+    cursor.execute(command)
+
+    dbLibrary.commit(dbStories)
+    dbLibrary.closeFile(dbStories)  
+
+    return redirect(url_for('home'))
+    
 
 if __name__ == "__main__":
     story_app.run(debug=True)
