@@ -23,10 +23,14 @@ story_app.secret_key = os.urandom(32)
 #------------------------LOGIN----------------------------------
 @story_app.route("/")
 def root():
+    if 'username' in session:
+        return redirect(url_for('home'))
     return redirect(url_for('login'))
 
 @story_app.route("/login", methods = ['POST' , 'GET'])
 def login():
+    if 'username' in session:
+        return redirect(url_for('home'))
     return render_template("login.html")
 
 @story_app.route("/authenticate",methods = ['POST','GET'])
@@ -35,9 +39,6 @@ def authenticate():
     cursor = dbLibrary.createCursor(dbStories)
     input_username = request.form['username']
     input_password = request.form['password']
-    #print input_username
-    #print input_password
-
 
     if input_username=='' or input_password=='' :
         flash("Please Fill In All Fields")
@@ -65,6 +66,13 @@ def authenticate():
     else:
         flash("Invalid Login Information")
         return redirect(url_for('login'))
+    
+@story_app.route("/home",methods = ['POST','GET'])
+def home():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template("base.html",username = session['username'])
+
 #-------------------------------------------------------------------
 
 
@@ -119,14 +127,14 @@ def accountSubmit():
 
 #-----------------------------------------------------------
 
-@story_app.route("/home",methods = ['POST','GET'])
-def home():
-    return render_template("base.html") #I don't think its a good idea to put it in base, base shud never be rendered
+
 
 #---------------CREATING STORY----------------------------
 
 @story_app.route("/create")
 def create_story():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     return render_template("create.html")
 
 @story_app.route("/new_submit", methods = ['POST'])
@@ -135,28 +143,20 @@ def new_submit():
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
-    print request.form
     title = request.form['title']
-    print title
     body = request.form['body']
 
-    #print 'stories/' + title + '.txt'
-    #print os.getcwd()
     #Creating story file:
     story_obj = open('stories/' + title + '.txt', "w+")
     story_obj.write(body)
     story_obj.close()
 
     datetime2 = str(datetime.now())[0:-7]#date and time (w/o milliseconds)
-    print datetime2
-    print session
     last_editor = session["username"]
     dbLibrary.insertRow('mainStories', ['title', 'timeLast', 'lastAdd', 'storyFile', 'lastEditor'], [title, datetime2, body, title + ".txt", last_editor], cursor)
 
-    #print dbLibrary.display('mainStories', 'storyIDs', cursor)
 
     #Fix the table to add the story id too
-    #UPDATE <table> SET <field> = <value> WHERE <condition>;
     command = "SELECT * FROM mainStories WHERE title = '" + title + "'AND timeLast = '" + datetime2 + "';"
     #There should only be one row from this command
     for fieldrow in cursor.execute(command):
@@ -175,13 +175,14 @@ def new_submit():
 
 @story_app.route("/view")
 def view_stories():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
     stories_raw = dbLibrary.display('mainStories', ['title', 'storyID', 'timeLast', 'storyFile', 'lastEditor'], cursor)
-    #print stories_raw
-
-    print stories_raw
+   
 
     entries_list = stories_raw.split("$|$\n")#list of entries
     header = entries_list.pop(0)
@@ -202,15 +203,6 @@ def view_stories():
     userdata = cursor.fetchall()
     print userdata
 
-    # for entry in split_entries_list:
-    #     print "ENTRY"
-    #     print entry
-    #     #print entry[5]
-    #     #print session["username"]
-    #     if entry[5] == session["username"]:
-    #         print entry
-    #         your_split_entries.append(entry)#append only your additions
-
     for story in userdata:#maybe we can do this in not O(n^2)
         if story[0] == session["username"]:
             print story[0]
@@ -227,7 +219,7 @@ def view_stories():
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
-    return render_template("view.html", story_list = your_split_entries)
+    return render_template("view.html", username = session['username'],story_list = your_split_entries)
 
 
 @story_app.route("/view/<id>")#create route to view each story
@@ -254,11 +246,13 @@ def view_single(id):
 #-------------------------------------------------------
 @story_app.route("/edit")
 def edit_stories():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
     stories_raw = dbLibrary.display('mainStories', ['title', 'storyID', 'timeLast', 'storyFile', 'lastEditor'], cursor)
-    #print stories_raw
 
     print stories_raw
 
@@ -279,15 +273,6 @@ def edit_stories():
     print "FETCHALL"
     userdata = cursor.fetchall()
     print userdata
-
-    # for entry in split_entries_list:
-    #     print "ENTRY"
-    #     print entry
-    #     #print entry[5]
-    #     #print session["username"]
-    #     if entry[5] != session["username"]:
-    #         print entry
-    #         available_split_entries.append(entry)#append stories you haven't editted
 
     ids_edited = []
     for story in userdata:
@@ -312,7 +297,7 @@ def edit_stories():
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
-    return render_template("edit_list.html", story_list = available_split_entries)
+    return render_template("edit.html", username = session['username'], story_list = available_split_entries)
 
 @story_app.route("/edit/<id>")#create route to view each story
 def edit_single(id):
@@ -321,18 +306,10 @@ def edit_single(id):
 
     command = "SELECT * FROM mainStories WHERE storyID =" + str(id) + ";"#match story IDs
 
-    #There should only be one row
+    #There should only be one row with a given storyID
     for row in cursor.execute(command):
         title = row[0]
         lastaddition = row[3]
-
-    #filename = cursor.fetchall()[0][0]#extract from tuple from list
-    #print "FILENAME"
-    #print filename
-    #readobj = open("stories/" + filename, "r")
-    #body = readobj.read()
-    #print body
-    #lastaddition = "Something from table"
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
@@ -342,9 +319,6 @@ def edit_single(id):
 @story_app.route("/edit_submit", methods = ['POST'])
 def edit_submit():
 
-    #Stuff to update the last Add of main Stories
-    #UPDATE <table> SET <field> = <value> WHERE <condition>;
-    #
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
@@ -358,19 +332,27 @@ def edit_submit():
     story_obj.write(newAdd)
     story_obj.close()
 
+    #Updating the last addition and editor
     command = "UPDATE mainStories SET lastAdd = '" + newAdd + "' WHERE storyID =" + id + ";" #update lastAdd
     cursor.execute(command)
     command = "UPDATE mainStories SET lastEditor = '" + last_editor + "' WHERE storyID =" + id + ";" #update lastAdd
     cursor.execute(command)
-    dbLibrary.insertRow('userStories', ['username', 'storyIDs','myAddition'], [last_editor, id, newAdd], cursor)
 
-    #Update the other database with all the user additions
+    #Update the table of all the user additions
+    dbLibrary.insertRow('userStories', ['username', 'storyIDs','myAddition'], [last_editor, id, newAdd], cursor)
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
     return redirect(url_for('home'))
 
+
+@story_app.route('/logout',methods = ['GET'])
+def logout():
+    username = session.pop('username')
+    msg = "Successfully logged out " + username
+    flash(msg)
+    return redirect(url_for('login'))
 
 if __name__ == "__main__":
     story_app.run(debug=True)

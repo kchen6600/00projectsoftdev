@@ -8,12 +8,12 @@
   <body>
 	{% set messages = get_flashed_messages() %}
 	{% for message in messages %}
-		<i><h5>{{message}}</h5></i>
+		<i><h4>{{message}}</h4></i>
 	{% endfor %}
 	
     {% block body %}
     <center>
-      <h2> Welcome home! </h2>
+      <h2> Welcome home, {{username}}! </h2>
       <p> Pick a button </p>
       <form method = "GET" action = "create">
 	<button type = "submit"> Create a New Story </button>
@@ -23,6 +23,10 @@
       </form>
       <form method = "GET" action = "edit">
 	<button type = "submit">Add to an Existing Story </button>
+      </form>
+      <br>
+      <form method = "GET" action = "logout">
+	<button type = "submit">Logout </button>
       </form>
     </center>
     {% endblock %}
