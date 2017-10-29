@@ -5,6 +5,10 @@
 {% endblock %}
 
 {% block body %}
+
+<form method = "GET" action = {{back}}>
+	<button type="submit">Back</button>
+</form>
 <h3> {{title}} </h3>
 <p><b>Last Addition: </b> {{lastaddition}} <br> ~ {{lastEditor}}</p>
 </center>
@@ -12,9 +16,9 @@
   Your addition:<br>
   <input type = "hidden" name = "title" value = "{{title}}"> 
   <input type = "hidden" name = "id" value = "{{id}}"> 
-  <textarea rows = "15" cols = "200" name = "addition">
-    Input your addition here.
+  <textarea rows = "15" cols = "200" name = "addition" value=''>
   </textarea>
   <button type = "submit"> Submit </button>
 </form>
 {% endblock %}
+

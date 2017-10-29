@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block body %}
+<form method = "GET" action = {{back}}>
+	<button type="submit">Back</button>
+</form>
 <h3> {{title}} </h3>
 <p> {{body}}</p>
 {% endblock %}

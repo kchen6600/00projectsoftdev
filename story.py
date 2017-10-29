@@ -39,11 +39,15 @@ def authenticate():
     cursor = dbLibrary.createCursor(dbStories)
     input_username = request.form['username']
     input_password = request.form['password']
-
+    
     if input_username=='' or input_password=='' :
         flash("Please Fill In All Fields")
         return redirect(url_for('login'))
 
+    if "'" in input_username or "'" in input_password:
+        flash("Invalid Login Info")
+        return redirect(url_for('login'))
+    
     hashed_passCursor = cursor.execute("SELECT password FROM accounts WHERE username = '" + input_username + "'")
     numPasses = 0 #should end up being 1 if all fields were filled
 
@@ -136,16 +140,27 @@ def create_story():
     if 'username' not in session:
         flash("Session timed out")
         return redirect(url_for('login'))
-    return render_template("create.html")
+
+    back = "/home"
+    return render_template("create.html", back=back)
 
 @story_app.route("/new_submit", methods = ['POST'])
 def new_submit():
-
-    dbStories = dbLibrary.openDb("data/stories.db")
-    cursor = dbLibrary.createCursor(dbStories)
+    if 'username' not in session:
+        flash("Session timed out")
+        return redirect(url_for('login'))
 
     title = request.form['title']
     body = request.form['body']
+
+    if title=='' or body =='':
+        flash("Please fill out all fields before submitting")
+        return redirect(url_for("create_story"))
+        
+    dbStories = dbLibrary.openDb("data/stories.db")
+    cursor = dbLibrary.createCursor(dbStories)
+
+    
 
     #Creating story file:
     story_obj = open('stories/' + title + '.txt', "w+")
@@ -180,6 +195,8 @@ def view_stories():
         flash("Session timed out")
         return redirect(url_for('login'))
 
+    back = "/home"
+    
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
@@ -221,11 +238,16 @@ def view_stories():
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
-    return render_template("view.html", username = session['username'],story_list = your_split_entries)
+    return render_template("view.html", username = session['username'],story_list = your_split_entries, back=back)
 
 
 @story_app.route("/view/<id>")#create route to view each story
 def view_single(id):
+    if 'username' not in session:
+        flash("Session timed out")
+        return redirect(url_for('login'))
+
+    back = "/view"
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
@@ -242,7 +264,7 @@ def view_single(id):
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
-    return render_template("view_single.html", title = filename[:-4], body = body)
+    return render_template("view_single.html", title = filename[:-4], body = body, back=back)
 
 
 #---------------------EDIT EXISTING STORY----------------------------------
@@ -252,6 +274,7 @@ def edit_stories():
         flash("Session timed out")
         return redirect(url_for('login'))
 
+    back = "/home"
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
@@ -300,10 +323,15 @@ def edit_stories():
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
-    return render_template("edit.html", username = session['username'], story_list = available_split_entries)
+    return render_template("edit.html", username = session['username'], story_list = available_split_entries, back=back)
 
 @story_app.route("/edit/<id>")#takes you to a form to add to an existing story
 def edit_single(id):
+    if 'username' not in session:
+        flash("Session timed out")
+        return redirect(url_for('login'))
+
+    back = "/edit"
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
@@ -318,18 +346,26 @@ def edit_single(id):
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
-    return render_template("edit_single.html", id = id, title = title, lastaddition = lastaddition, lastEditor= lastEditor)
+    return render_template("edit_single.html", id = id, title = title, lastaddition = lastaddition, lastEditor= lastEditor, back = back)
 
 @story_app.route("/edit_submit", methods = ['POST']) #adding edits to database
 def edit_submit():
+    if 'username' not in session:
+        flash("Session timed out")
+        return redirect(url_for('login'))
 
-    dbStories = dbLibrary.openDb("data/stories.db")
-    cursor = dbLibrary.createCursor(dbStories)
-
+   
     title = request.form['title']
     id = request.form['id']
     newAdd = request.form['addition']
     last_editor = session["username"]
+    
+    if newAdd == '':
+        flash("Please fill in all fields before submitting")
+        return redirect('/edit/' +id)
+    
+    dbStories = dbLibrary.openDb("data/stories.db")
+    cursor = dbLibrary.createCursor(dbStories)
 
     #dealing with the presence of single quotes and double quotes
     fixedAdd = ''
@@ -359,6 +395,7 @@ def edit_submit():
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
+    flash("Successfully contributed to " + title + "!")
     return redirect(url_for('home'))
 
 
