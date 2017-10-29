@@ -100,9 +100,9 @@ def accountSubmit():
         flash("Password must have at least 6 characters")
         return redirect(url_for('account'))
 
-    elif (' ' in username or ' ' in password):
+    elif (' ' in username or ' ' in password or "'" in username or "'" in password or '"' in username or '"' in password ):
         dbLibrary.closeFile(dbStories)
-        flash("Username and Password cannot contain the space character")
+        flash("Username and Password cannot contain the space,single quote, or double quote character")
         return redirect(url_for('account'))
 
     password = hash_password(password)
@@ -134,6 +134,7 @@ def accountSubmit():
 @story_app.route("/create")
 def create_story():
     if 'username' not in session:
+        flash("Session timed out")
         return redirect(url_for('login'))
     return render_template("create.html")
 
@@ -155,18 +156,18 @@ def new_submit():
     last_editor = session["username"]
     dbLibrary.insertRow('mainStories', ['title', 'timeLast', 'lastAdd', 'storyFile', 'lastEditor'], [title, datetime2, body, title + ".txt", last_editor], cursor)
 
+    storyid_cursor = cursor.execute('SELECT storyID FROM mainStories WHERE title = "' + title + '" AND timeLast ="' + datetime2 + '";')
+    for item in storyid_cursor:
+        #print item
+        storyid = item[0] 
+    
 
-    #Fix the table to add the story id too
-    command = "SELECT * FROM mainStories WHERE title = '" + title + "'AND timeLast = '" + datetime2 + "';"
-    #There should only be one row from this command
-    for fieldrow in cursor.execute(command):
-        storyID = fieldrow[1]
-
-    dbLibrary.insertRow('userStories', ['username', 'storyID','myAddition'], [last_editor, storyID, body], cursor)
+    dbLibrary.insertRow('userStories', ['username', 'storyID','myAddition'], [last_editor, storyid, body], cursor)
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
+    flash("You have successfully created a story! View " + title + " as it changes in 'View Your Stories'")
     return redirect(url_for('home'))
 
 #---------------------------------------------------------
@@ -176,6 +177,7 @@ def new_submit():
 @story_app.route("/view")
 def view_stories():
     if 'username' not in session:
+        flash("Session timed out")
         return redirect(url_for('login'))
 
     dbStories = dbLibrary.openDb("data/stories.db")
@@ -243,10 +245,11 @@ def view_single(id):
     return render_template("view_single.html", title = filename[:-4], body = body)
 
 
-#-------------------------------------------------------
-@story_app.route("/edit")
+#---------------------EDIT EXISTING STORY----------------------------------
+@story_app.route("/edit")  #list of existing stories that user hasn't contributed to yet
 def edit_stories():
     if 'username' not in session:
+        flash("Session timed out")
         return redirect(url_for('login'))
 
     dbStories = dbLibrary.openDb("data/stories.db")
@@ -299,7 +302,7 @@ def edit_stories():
 
     return render_template("edit.html", username = session['username'], story_list = available_split_entries)
 
-@story_app.route("/edit/<id>")#create route to view each story
+@story_app.route("/edit/<id>")#takes you to a form to add to an existing story
 def edit_single(id):
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
@@ -310,13 +313,14 @@ def edit_single(id):
     for row in cursor.execute(command):
         title = row[0]
         lastaddition = row[3]
+        lastEditor = row[5]
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
-    return render_template("edit_single.html", id = id, title = title, lastaddition = lastaddition)
+    return render_template("edit_single.html", id = id, title = title, lastaddition = lastaddition, lastEditor= lastEditor)
 
-@story_app.route("/edit_submit", methods = ['POST'])
+@story_app.route("/edit_submit", methods = ['POST']) #adding edits to database
 def edit_submit():
 
     dbStories = dbLibrary.openDb("data/stories.db")
@@ -327,19 +331,30 @@ def edit_submit():
     newAdd = request.form['addition']
     last_editor = session["username"]
 
+    #dealing with the presence of single quotes and double quotes
+    fixedAdd = ''
+    
+    if '"' in newAdd or "'" in newAdd:
+        newAdd_List = list(newAdd)
+        for i in range(0, len(newAdd_list)):
+            if newAdd_list[i] == '"':
+                newAdd_list[i] = '@double@'
+    
+   
+       
     #Updating story file:
     story_obj = open('stories/' + title + '.txt', "a+")
     story_obj.write(newAdd)
     story_obj.close()
-
+    
     #Updating the last addition and editor
-    command = "UPDATE mainStories SET lastAdd = '" + newAdd + "' WHERE storyID =" + id + ";" #update lastAdd
+    command = "UPDATE mainStories SET lastAdd = '" + fixedAdd + "' WHERE storyID =" + id + ";" #update lastAdd
     cursor.execute(command)
     command = "UPDATE mainStories SET lastEditor = '" + last_editor + "' WHERE storyID =" + id + ";" #update lastAdd
     cursor.execute(command)
 
     #Update the table of all the user additions
-    dbLibrary.insertRow('userStories', ['username', 'storyID','myAddition'], [last_editor, id, newAdd], cursor)
+    dbLibrary.insertRow('userStories', ['username', 'storyID','myAddition'], [last_editor, id, fixedAdd], cursor)
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
