@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     createTable('mainStories',['title','storyID', 'timeLast', 'lastAdd','storyFile','lastEditor'] ,['TEXT', 'INTEGER PRIMARY KEY AUTOINCREMENT','TEXT', 'TEXT', 'TEXT', 'TEXT'], cursor)
 
-    createTable('userStories', ['username', 'storyIDs' , 'myAddition'], ['TEXT' , 'TEXT' , 'TEXT'],cursor)
+    createTable('userStories', ['username', 'storyID' , 'myAddition'], ['TEXT' , 'TEXT' , 'TEXT'],cursor)
 
 
     createTable('accounts', ['username', 'password'], ['TEXT', 'TEXT'], cursor)

@@ -66,7 +66,7 @@ def authenticate():
     else:
         flash("Invalid Login Information")
         return redirect(url_for('login'))
-    
+
 @story_app.route("/home",methods = ['POST','GET'])
 def home():
     if 'username' not in session:
@@ -162,7 +162,7 @@ def new_submit():
     for fieldrow in cursor.execute(command):
         storyID = fieldrow[1]
 
-    dbLibrary.insertRow('userStories', ['username', 'storyIDs','myAddition'], [last_editor, storyID, body], cursor)
+    dbLibrary.insertRow('userStories', ['username', 'storyID','myAddition'], [last_editor, storyID, body], cursor)
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
@@ -177,12 +177,12 @@ def new_submit():
 def view_stories():
     if 'username' not in session:
         return redirect(url_for('login'))
-    
+
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
     stories_raw = dbLibrary.display('mainStories', ['title', 'storyID', 'timeLast', 'storyFile', 'lastEditor'], cursor)
-   
+
 
     entries_list = stories_raw.split("$|$\n")#list of entries
     header = entries_list.pop(0)
@@ -195,8 +195,8 @@ def view_stories():
 
     your_split_entries = []
 
-    #users_raw = dbLibrary.display('userStories', ['title', 'storyIDs', 'myAddition'], cursor)
-    command = "SELECT username, storyIDs, myAddition FROM userStories"
+    #users_raw = dbLibrary.display('userStories', ['title', 'storyID', 'myAddition'], cursor)
+    command = "SELECT username, storyID, myAddition FROM userStories"
     cursor.execute(command)
 
     print "FETCHALL"
@@ -248,7 +248,7 @@ def view_single(id):
 def edit_stories():
     if 'username' not in session:
         return redirect(url_for('login'))
-    
+
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
@@ -267,7 +267,7 @@ def edit_stories():
 
     available_split_entries = []
 
-    command = "SELECT username, storyIDs, myAddition FROM userStories"
+    command = "SELECT username, storyID, myAddition FROM userStories"
     cursor.execute(command)
 
     print "FETCHALL"
@@ -339,7 +339,7 @@ def edit_submit():
     cursor.execute(command)
 
     #Update the table of all the user additions
-    dbLibrary.insertRow('userStories', ['username', 'storyIDs','myAddition'], [last_editor, id, newAdd], cursor)
+    dbLibrary.insertRow('userStories', ['username', 'storyID','myAddition'], [last_editor, id, newAdd], cursor)
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
