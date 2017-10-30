@@ -5,20 +5,20 @@
 {% endblock %}
 
 {% block body %}
-
+<br>
 <form method = "GET" action = {{back}}>
-	<button type="submit">Back</button>
+	<button type="submit" style="background-color: #4CAF50;border: none;color: white;text-align: center;display: inline-block;padding: 10px 22px; font-size:14px;">Back</button>
 </form>
 <h3> {{title}} </h3>
 <p><b>Last Addition: </b> {{lastaddition}} <br> ~ {{lastEditor}}</p>
-</center>
 <form method = "POST" action = "/edit_submit">
   Your addition:<br>
   <input type = "hidden" name = "title" value = "{{title}}"> 
   <input type = "hidden" name = "id" value = "{{id}}"> 
-  <textarea rows = "15" cols = "200" name = "addition" value=''>
-  </textarea>
-  <button type = "submit"> Submit </button>
+  <textarea rows = "15" cols = "100" name = "addition" value=''>
+  </textarea><br>
+  <button type = "submit" style="background-color: #4CAF50;border: none;color: white;text-align: center;display: inline-block;padding: 10px 22px; font-size:14px;"> Submit </button>
 </form>
+<br>
 {% endblock %}
 

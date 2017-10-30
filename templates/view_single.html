@@ -5,9 +5,12 @@
 {% endblock %}
 
 {% block body %}
-<form method = "GET" action = {{back}}>
-	<button type="submit">Back</button>
-</form>
+<br>
 <h3> {{title}} </h3>
 <p> {{body}}</p>
+<br>
+<form method = "GET" action = {{back}}>
+	<button type="submit" style="background-color: #4CAF50;border: none;color: white;text-align: center;display: inline-block;padding: 10px 22px; font-size:14px;">Back</button>
+</form>
+<br>
 {% endblock %}

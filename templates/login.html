@@ -3,16 +3,22 @@
 {% block title %}
 <title> Login </title>
 {% endblock %}
-
+<body>
 {% block body %}
+	<center>
+	<h1 style="font-size:40px;font-family: 'Poiret One', cursive ;background-color: gray; width:700px; height:50px;">Collab Storytelling Thinamajig</h1>
+	<div style="text-align:center; background-color: lightgray; width: 600px;">
     <h1> LOGIN </h1>
     <form method="POST" action="/authenticate">
       <h2>Enter your username</h2>
       <input type="text" name="username" value=''><br><br>
       <h2>Enter your password</h2>
       <input type="password" name="password" value=''><br><br>
-      <input type="submit" name="submit" value = "SUBMIT">
+      <input type="submit" name="submit" style="background-color: #4CAF50;border: none;color: white;text-align: center;display: inline-block;padding: 10px 22px; font-size:14px;" value = "SUBMIT">
     </form>
     <h2> First time visitor? </h2>
-    <a href="/account"><h3>Create an account</h3></a>
+    <a href="/account"><h3 style="background-color: #4CAF50;border: none;color: white;text-align: center;display: inline-block;padding: 10px 22px; font-size:14px; margin-top:-10px;">Create an account</h3></a>
 {% endblock %}
+	</div>
+	</center>
+</body>

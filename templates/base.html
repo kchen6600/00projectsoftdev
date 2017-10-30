@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html>
   <head>
+	<link href="https://fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet">
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
     {% block title %}
     <title> Story thing </title>
     {% endblock %}
   </head>
-  <body>
+  <body style = "background-image: url('static/backgroundreading.jpg');">
+  <center><div style="text-align:center; background-color: lightgray; width: 700px; margin-top:100px;">
 	{% set messages = get_flashed_messages() %}
 	{% for message in messages %}
-		<i><h4>{{message}}</h4></i>
+		<center><i><h4 style="margin-bottom:-10px;">{{message}}</h4></i></center>
 	{% endfor %}
 	
     {% block body %}
     <center>
+	  <br>	
       <h2> Welcome home, {{username}}! </h2>
-      <p> Pick a button </p>
+      <p> Pick a button:</p>
       <form method = "GET" action = "create">
-	<button type = "submit"> Create a New Story </button>
-      </form>
+	<button type = "submit" class=button> Create a New Story </button>
+      </form><br>
       <form method = "GET" action = "view">
-	<button type = "submit"> View Your Stories </button>
-      </form>
+	<button type = "submit" class=button> View Your Stories </button>
+      </form><br>
       <form method = "GET" action = "edit">
-	<button type = "submit">Add to an Existing Story </button>
+	<button type = "submit" class=button>Add to an Existing Story </button>
       </form>
       <br>
       <form method = "GET" action = "logout">
-	<button type = "submit">Logout </button>
+	<button type = "submit" class=button>Logout </button>
       </form>
+	  <br>
     </center>
     {% endblock %}
-	
+  </div></center>	
 	
     
   </body>
