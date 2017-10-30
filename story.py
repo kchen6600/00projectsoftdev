@@ -39,7 +39,7 @@ def authenticate():
     cursor = dbLibrary.createCursor(dbStories)
     input_username = request.form['username']
     input_password = request.form['password']
-    
+
     if input_username=='' or input_password=='' :
         flash("Please Fill In All Fields")
         return redirect(url_for('login'))
@@ -47,7 +47,7 @@ def authenticate():
     if "'" in input_username or "'" in input_password:
         flash("Invalid Login Info")
         return redirect(url_for('login'))
-    
+
     hashed_passCursor = cursor.execute("SELECT password FROM accounts WHERE username = '" + input_username + "'")
     numPasses = 0 #should end up being 1 if all fields were filled
 
@@ -156,11 +156,11 @@ def new_submit():
     if title=='' or body =='':
         flash("Please fill out all fields before submitting")
         return redirect(url_for("create_story"))
-        
+
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
-    
+
 
     #Creating story file:
     story_obj = open('stories/' + title + '.txt', "w+")
@@ -174,8 +174,8 @@ def new_submit():
     storyid_cursor = cursor.execute('SELECT storyID FROM mainStories WHERE title = "' + title + '" AND timeLast ="' + datetime2 + '";')
     for item in storyid_cursor:
         #print item
-        storyid = item[0] 
-    
+        storyid = item[0]
+
 
     dbLibrary.insertRow('userStories', ['username', 'storyID','myAddition'], [last_editor, storyid, body], cursor)
 
@@ -196,7 +196,7 @@ def view_stories():
         return redirect(url_for('login'))
 
     back = "/home"
-    
+
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
@@ -354,35 +354,35 @@ def edit_submit():
         flash("Session timed out")
         return redirect(url_for('login'))
 
-   
+
     title = request.form['title']
     id = request.form['id']
     newAdd = request.form['addition']
     last_editor = session["username"]
-    
+
     if newAdd == '':
         flash("Please fill in all fields before submitting")
         return redirect('/edit/' +id)
-    
+
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
     #dealing with the presence of single quotes and double quotes
     fixedAdd = ''
-    
+
     if '"' in newAdd or "'" in newAdd:
-        newAdd_List = list(newAdd)
+        newAdd_list = list(newAdd)
         for i in range(0, len(newAdd_list)):
             if newAdd_list[i] == '"':
                 newAdd_list[i] = '@double@'
-    
-   
-       
+
+
+
     #Updating story file:
     story_obj = open('stories/' + title + '.txt', "a+")
     story_obj.write(newAdd)
     story_obj.close()
-    
+
     #Updating the last addition and editor
     command = "UPDATE mainStories SET lastAdd = '" + fixedAdd + "' WHERE storyID =" + id + ";" #update lastAdd
     cursor.execute(command)
