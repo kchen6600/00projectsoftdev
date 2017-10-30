@@ -1,2 +1,4 @@
 - accounted for account creation and account database interaction (forgotten in original design document)
 - now creates a new route for every new story created and edited (unlimited routes) by adding a new variable (original plan called for limited number of routes)
+- storyID of userStories became an Integer type in SQL (instead of CSV of strings)
+- does not highlight the user's contribution to a story
