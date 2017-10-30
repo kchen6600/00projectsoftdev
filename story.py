@@ -276,16 +276,20 @@ def view_single(id):
     filename = cursor.fetchall()[0][0]#extract from tuple from list
     print "FILENAME"
     print filename
-    readobj = open("stories/" + filename, "r")
+
+    title = filename[:-4]
+    title_List = title.split("@single@")
+    title = ("'").join(title_List)
+    print title
+    
+    readobj = open("stories/" + str(title)+ ".txt", "r")
     body = readobj.read()
 
     #substituting all @single@ for single quotes
     body_List = body.split("@single@")
     body = ("'").join(body_List)
 
-    title = filename[:-4]
-    title_List = title.split("@single@")
-    title = ("'").join(title_List)
+   
     
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
