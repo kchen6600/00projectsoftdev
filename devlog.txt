@@ -29,3 +29,8 @@ fixed sessions and personalized pages
 ------------------------------------------------------------------
 chenK - 2017-10-29 20:09
 worked on CSS + general aesthetics
+------------------------------------------------------------------
+parabS - 2017-10-29 23:49
+fixed view and edit
+
+

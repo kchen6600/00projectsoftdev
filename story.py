@@ -235,7 +235,8 @@ def view_stories():
             print story[0]
             print story[1]
             for entry in split_entries_list:
-                if entry[1] == story[1]:
+                print entry
+                if int(entry[1]) == story[1]:
                     print entry
                     your_split_entries.append(entry)#append only your additions
 
@@ -325,7 +326,8 @@ def edit_stories():
             #print story[0]
             #print story[1]
             for entry in split_entries_list:
-                if entry[1] not in ids_edited and entry not in available_split_entries:
+                print entry
+                if int(entry[1]) not in ids_edited and entry not in available_split_entries:
                     #print entry
                     available_split_entries.append(entry)#append only your additions
 
