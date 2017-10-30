@@ -26,3 +26,6 @@ made view/edit keep track of all users who edited not just last edit
 ------------------------------------------------------------------
 parabS - 2017-10-28 23:03
 fixed sessions and personalized pages
+------------------------------------------------------------------
+chenK - 2017-10-29 20:09
+worked on CSS + general aesthetics
