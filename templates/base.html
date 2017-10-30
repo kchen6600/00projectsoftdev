@@ -8,7 +8,7 @@
     {% endblock %}
   </head>
   <body style = "background-image: url('static/backgroundreading.jpg');">
-  <center><div style="text-align:center; background-color: lightgray; width: 700px; margin-top:100px;">
+  <center><div style="text-align:center; background-color: lightgray; width: 700px; margin-top:100px; border-radius: 30px; border: 2px dashed #ffffff; box-shadow: 0 0 0 8px #70ff0030;">
 	{% set messages = get_flashed_messages() %}
 	{% for message in messages %}
 		<center><i><h4 style="margin-bottom:-10px;">{{message}}</h4></i></center>

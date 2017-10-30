@@ -14,6 +14,10 @@ body{
 	padding: 10px 22px;
 	font-size:14px;
 }
+
+.submit:hover{
+	background: #006400;
+}
 .button {
 	background-color: #4CAF50;
 	border: none;
