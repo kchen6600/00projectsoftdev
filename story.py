@@ -160,6 +160,14 @@ def new_submit():
     dbStories = dbLibrary.openDb("data/stories.db")
     cursor = dbLibrary.createCursor(dbStories)
 
+    #dealing with the presence of single quotes and double quotes
+    if "'" in body:
+        body_list = list(body)
+        for i in range(0, len(body_list)):
+            if body_list[i] == "'":
+                body_list[i] = '@single@'
+        body = ("").join(body_list)
+        
 
 
     #Creating story file:
@@ -259,7 +267,10 @@ def view_single(id):
     print filename
     readobj = open("stories/" + filename, "r")
     body = readobj.read()
-    print body
+
+    #substituting all @single@ for single quotes
+    body_List = body.split("@single@")
+    body = ("'").join(body_List)
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
@@ -343,6 +354,10 @@ def edit_single(id):
         lastaddition = row[3]
         lastEditor = row[5]
 
+    #substituting all @single@ for single quotes
+    lastAdd_List = lastaddition.split("@single@")
+    lastaddition = ("'").join(lastAdd_List)
+    
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
@@ -368,15 +383,16 @@ def edit_submit():
     cursor = dbLibrary.createCursor(dbStories)
 
     #dealing with the presence of single quotes and double quotes
-    fixedAdd = ''
-
-    if '"' in newAdd or "'" in newAdd:
+    if "'" in newAdd:
+        #print "\n\n\n\n\n\n\nHERE I AM\n\n\n\n\n\n\n"
         newAdd_list = list(newAdd)
         for i in range(0, len(newAdd_list)):
-            if newAdd_list[i] == '"':
-                newAdd_list[i] = '@double@'
-
-
+            if newAdd_list[i] == "'":
+                newAdd_list[i] = '@single@'
+        newAdd_tidy = ("").join(newAdd_list)
+    else:
+        newAdd_tidy = newAdd
+    
 
     #Updating story file:
     story_obj = open('stories/' + title + '.txt', "a+")
@@ -384,13 +400,13 @@ def edit_submit():
     story_obj.close()
 
     #Updating the last addition and editor
-    command = "UPDATE mainStories SET lastAdd = '" + fixedAdd + "' WHERE storyID =" + id + ";" #update lastAdd
+    command = "UPDATE mainStories SET lastAdd = '" + newAdd_tidy + "' WHERE storyID =" + id + ";" #update lastAdd
     cursor.execute(command)
     command = "UPDATE mainStories SET lastEditor = '" + last_editor + "' WHERE storyID =" + id + ";" #update lastAdd
     cursor.execute(command)
 
     #Update the table of all the user additions
-    dbLibrary.insertRow('userStories', ['username', 'storyID','myAddition'], [last_editor, id, fixedAdd], cursor)
+    dbLibrary.insertRow('userStories', ['username', 'storyID','myAddition'], [last_editor,id, newAdd_tidy], cursor)
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
