@@ -2,12 +2,26 @@
 
 {% block title %}
 <title> Add to Stories </title>
+<style>
+  button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    text-align: center;
+    display: inline-block;
+    padding: 10px 22px;
+    font-size:14px;
+  }
+  button:hover {
+    background: #006400;
+  }
+</style>
 {% endblock %}
 
 {% block body %}
 <br>
 <form method = "GET" action = {{back}}>
-	<button type="submit" style="background-color: #4CAF50;border: none;color: white;text-align: center;display: inline-block;padding: 10px 22px; font-size:14px;">Back</button>
+	<button type="submit">Back</button>
 </form>
 <center>
     <h2> Stories {{username}} has not contributed to </h2>

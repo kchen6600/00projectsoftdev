@@ -1,7 +1,7 @@
 /* css stylesheet */
 
-body{ 
-	font-family: sans-serif; 
+body{
+	font-family: sans-serif;
 }
 
 /* sample button class CSS */
@@ -21,4 +21,8 @@ body{
 	text-align: center;
 	display: inline-block;
 	font-size:16px;
+}
+
+.button:hover {
+	background: #006400;
 }

@@ -2,15 +2,19 @@
 
 {% block title %}
 <title> {{title}} </title>
+<style>
+  p {
+    white-space:nowrap;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 200px;
+  }
+</style>
 {% endblock %}
 
 {% block body %}
-<br>
 <h3> {{title}} </h3>
-<p> {{body}}</p>
-<br>
-<form method = "GET" action = {{back}}>
-	<button type="submit" style="background-color: #4CAF50;border: none;color: white;text-align: center;display: inline-block;padding: 10px 22px; font-size:14px;">Back</button>
-</form>
-<br>
+<p style = margin-left: 20px; margin-right: 20px;> {{body}}</p>
 {% endblock %}
