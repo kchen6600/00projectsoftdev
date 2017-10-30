@@ -1,0 +1,2 @@
+- accounted for account creation and account database interaction (forgotten in original design document)
+- now creates a new route for every new story created and edited (unlimited routes) by adding a new variable (original plan called for limited number of routes)
