@@ -2,6 +2,7 @@
 
 {% block title %}
 <title> {{title}} </title>
+
 <style>
   p {
     margin-top: 15px;
@@ -9,10 +10,25 @@
     margin-right: 100px;
     margin-left: 100px;
   }
+  button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    text-align: center;
+    display: inline-block;
+    padding: 10px 22px;
+    font-size:14px;
+  }
+  button:hover {
+    background: #006400;
+  }
 </style>
 {% endblock %}
-
 {% block body %}
+<br>
+<form method = "GET" action = {{back}}>
+	<button type="submit">Back</button>
+</form>
 <h3> {{title}} </h3>
 <p> {{body}}</p>
 {% endblock %}

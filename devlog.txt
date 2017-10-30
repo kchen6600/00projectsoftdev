@@ -15,14 +15,23 @@ account creation template and route
 freudenbergJ - 2017-10-28 09:46
 added create stories, temporary less functional sessions
 ------------------------------------------------------------------
+fominaS - 2017-10-28 10:32
+created flask operations for login and account creation 
+------------------------------------------------------------------
 freudenbergJ - 2017-10-28 11:59
 added view stories, view.html and jinja magic
 ------------------------------------------------------------------
+fominaS  -  2017-10-28 13:40
+fixed bug where it would allow you to submit a story with no title or content
+-------------------------------------------------------------------
 parabS - 2017-10-28 17:09
 added edit stories and editing html
 ------------------------------------------------------------------
 freudenbergJ - 2017-10-28 18:05
 made view/edit keep track of all users who edited not just last edit
+------------------------------------------------------------------
+fominaS - 2017-10-28 18:32
+added flash messages, back buttons, changed storyID type to integer in userStories table of db
 ------------------------------------------------------------------
 parabS - 2017-10-28 23:03
 fixed sessions and personalized pages
@@ -32,5 +41,18 @@ worked on CSS + general aesthetics
 ------------------------------------------------------------------
 parabS - 2017-10-29 23:49
 fixed view and edit
+-----------------------------------------------------------------
+fominaS - 2017-10-29 0:05
+fixed bugs in which title and content of story could not have single quotes in them (e.g. contractions) 
+
+
+
+
+
+
+
+
+
+
 
 

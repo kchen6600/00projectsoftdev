@@ -167,9 +167,16 @@ def new_submit():
             if body_list[i] == "'":
                 body_list[i] = '@single@'
         body = ("").join(body_list)
-        
 
-
+    if "'" in title:
+        title_list = list(title)
+        for i in range(0, len(title_list)):
+            if title_list[i] == "'":
+                title_list[i] = '@single@'
+        title_tidy = ("").join(title_list)
+    else:
+        title_tidy = title
+    
     #Creating story file:
     story_obj = open('stories/' + title + '.txt', "w+")
     story_obj.write(body)
@@ -177,9 +184,9 @@ def new_submit():
 
     datetime2 = str(datetime.now())[0:-7]#date and time (w/o milliseconds)
     last_editor = session["username"]
-    dbLibrary.insertRow('mainStories', ['title', 'timeLast', 'lastAdd', 'storyFile', 'lastEditor'], [title, datetime2, body, title + ".txt", last_editor], cursor)
+    dbLibrary.insertRow('mainStories', ['title', 'timeLast', 'lastAdd', 'storyFile', 'lastEditor'], [title_tidy, datetime2, body, title_tidy + ".txt", last_editor], cursor)
 
-    storyid_cursor = cursor.execute('SELECT storyID FROM mainStories WHERE title = "' + title + '" AND timeLast ="' + datetime2 + '";')
+    storyid_cursor = cursor.execute('SELECT storyID FROM mainStories WHERE title = "' + title_tidy + '" AND timeLast ="' + datetime2 + '";')
     for item in storyid_cursor:
         #print item
         storyid = item[0]
@@ -235,7 +242,7 @@ def view_stories():
             print story[0]
             print story[1]
             for entry in split_entries_list:
-                print entry
+               #print entry
                 if int(entry[1]) == story[1]:
                     print entry
                     your_split_entries.append(entry)#append only your additions
@@ -243,6 +250,9 @@ def view_stories():
 
     print your_split_entries
 
+    for entry in your_split_entries:
+        title_list = (entry[0]).split("@single@")
+        entry[0] = ("'").join(title_list)
 
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
@@ -273,10 +283,14 @@ def view_single(id):
     body_List = body.split("@single@")
     body = ("'").join(body_List)
 
+    title = filename[:-4]
+    title_List = title.split("@single@")
+    title = ("'").join(title_List)
+    
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
-    return render_template("view_single.html", title = filename[:-4], body = body, back=back)
+    return render_template("view_single.html", title = title, body = body, back=back)
 
 
 #---------------------EDIT EXISTING STORY----------------------------------
@@ -333,6 +347,10 @@ def edit_stories():
 
     print available_split_entries
 
+    for entry in available_split_entries:
+        title_list = (entry[0]).split("@single@")
+        entry[0] = ("'").join(title_list)
+    
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
 
@@ -359,6 +377,9 @@ def edit_single(id):
     #substituting all @single@ for single quotes
     lastAdd_List = lastaddition.split("@single@")
     lastaddition = ("'").join(lastAdd_List)
+
+    title_List = title.split("@single@")
+    title = ("'").join(title_List)
     
     dbLibrary.commit(dbStories)
     dbLibrary.closeFile(dbStories)
